@@ -15,4 +15,22 @@ CHIP Or {
 
     PARTS:
     // Put your code here:
+    /*
+    * Not(in=a, out=nota);
+    * Not(in=b, out=notb);
+    * Nand(a=nota, b=b, out=out1);
+    * Nand(a=a, b=notb, out=out2);
+    * Nand(a=a, b=b, out=out3);
+    * And(a=out1, b=out2, out=out4);
+    * And(a=out4, b=out3, out=out5);
+    * Not(in=out5, out=out);
+    */
+
+    /*
+    solve with De Morgan law
+    Not(Not(Or(a,b))) = Nand(Not(a), Not(b))
+    */
+    Not(in=a, out=nota);
+    Not(in=b, out=notb);
+    Nand(a=nota, b=notb, out=out);
 }
