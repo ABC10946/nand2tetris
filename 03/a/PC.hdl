@@ -17,4 +17,37 @@ CHIP PC {
 
     PARTS:
     // Put your code here:
+    // inc
+    /*
+    Register(in[0]=false, load=false, out=regout);
+    Inc16(in=regout, out=incw);
+    Register(in=incw, load=inc, out=incout);
+
+    // load
+    Register(in=in, load=load, out=loadout);
+
+    // reset
+    Register(in[0]=false, load=reset, out=resetout);
+    Mux8Way16(a=false, b=resetout, c=loadout, d=false, e=incout, f=false, g=false, h=false, sel[0]=reset, sel[1]=load, sel[2]=inc, out=out);
+    */
+
+    /*
+    Inc16(in=loop1, out=incout);
+    Mux16(a=incout, b=in, sel=load, out=mout);
+    Mux16(a=mout, b[0]=false, sel=reset, out=mout2);
+    Or(a=inc, b=load, out=orout);
+    // think about reset...
+    Register(in=mout2, load=orout, out=loop1, out=out);
+    */
+
+    Inc16(in=loopout, out=incval);
+    Mux8Way16(a=loopout, b=in, c=incval, d=in, e[0]=false, f[0]=false, g[0]=false, sel[0]=load, sel[1]=inc, sel[2]=reset, out=val);
+
+    // load is true
+    // Register(in=in, load=load, out=out);
+    // // inc is true
+    // Register(in=incval, load=inc, out=out);
+    // // reset is true
+    // Register(in[0]=false, load=reset, out=out);
+    Register(in=val, load=true, out=out, out=loopout);
 }
