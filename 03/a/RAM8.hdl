@@ -47,7 +47,8 @@ CHIP RAM8 {
     // Or16(a=outAB, b=outCD, out=outABCD);
     // Or16(a=outEF, b=outGH, out=outEFGH);
     // Or16(a=outABCD, b=outEFGH, out=out);
-    DMux8Way(in=load, sel=address, a=loadr1, b=loadr2, c=loadr3, d=loadr4, e=loadr5, f=loadr6, g=loadr7, h=loadr8);
+    DMux8Way(in=load, sel=address, a=loadr0, b=loadr1, c=loadr2, d=loadr3, e=loadr4, f=loadr5, g=loadr6, h=loadr7);
+    Register(in=in, load=loadr0, out=r0);
     Register(in=in, load=loadr1, out=r1);
     Register(in=in, load=loadr2, out=r2);
     Register(in=in, load=loadr3, out=r3);
@@ -55,6 +56,5 @@ CHIP RAM8 {
     Register(in=in, load=loadr5, out=r5);
     Register(in=in, load=loadr6, out=r6);
     Register(in=in, load=loadr7, out=r7);
-    Register(in=in, load=loadr8, out=r8);
-    Mux8Way16(a=r1, b=r2, c=r3, d=r4, e=r5, f=r6, g=r7, h=r8, sel=address, out=out);
+    Mux8Way16(a=r0, b=r1, c=r2, d=r3, e=r4, f=r5, g=r6, h=r7, sel=address, out=out);
 }
