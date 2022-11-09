@@ -11,20 +11,31 @@
 
 // Put your code here.
     // initialize answer register
+    @0     // R2を0で初期化する
+    D=A
     @2
     M=D
-(LOOP)
-    @1
+
+    @0     // R0が0であればENDにジャンプする
     D=M
     @END
     D;JEQ
-    @1
+
+(LOOP)
+    @1     // R1が0であればENDにジャンプする
+    D=M
+    @END
+    D;JEQ
+
+    @1     // R1を1減らす
     M=M-1
-    @0
+
+    @0     // R2にR0を足し込む
     D=M
     @2
     M=M+D
-    @LOOP
+
+    @LOOP  // LOOPにジャンプする
     0;JMP
 (END)
     @END
