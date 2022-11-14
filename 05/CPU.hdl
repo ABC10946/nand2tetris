@@ -40,24 +40,17 @@ CHIP CPU {
 
     PARTS:
     // Put your code here:
-    // descrime val or command
 
-    And16(a[0..15]=instruction, b[0..15]=true, out[15]=isCommand, out[0..14]=comp);
-    Not(in=isCommand, out=loadVal);
-    And16(a=instruction, b[0..15]=true, out[0..15]=value);
-    ARegister(in[0..15]=value, load=loadVal, out=outARegister);
+    // descrime "A command" or "C command"
+    And16(a[0..15]=instruction, b[0..15]=true, out[15]=isCCommand, out[0..14]=CCommand);
 
-    // Decoder
+    // Decode "C Command"
     // 111 a cccccc ddd jjj
-    // a: mode
+    // a: mode a=0 -> A Register, a=1 -> from Memory(M)
     // c: comp
     // d: dest
     // j: jump condition
-    And16(a[0..14]=comp ,b[0..14]=true,out[0..2]=jump,out[3..5]=dest,out[11]=zx, out[10]=nx, out[9]=zy, out[8]=ny, out[7]=f, out[6]=no ,out[12]=amode);
-    ARegister(in=false, load=false, out=outAtoCompute);
-    DRegister(in=false, load=false, out=ALUX);
-    Mux16(a=outAtoCompute, b=inM, sel=amode, out=ALUY);
-    ALU(x=ALUX, y=ALUY, zx=zx, nx=nx, zy=zy, ny=ny, f=f, no=no, out=outALU, zr=ALUzr, ng=ALUng);
+    And16(a[0..14]=CCommand ,b[0..14]=true, out[12]=amode, out[11]=zx, out[10]=nx, out[9]=zy, out[8]=ny, out[7]=f, out[6]=no, out[3..5]=dest, out[0..2]=jump);
 
     // decode dest
     DMux8Way(in=true, sel=dest, a=nullDest, b=MDest, c=DDest, d=MDDest, e=ADest, f=AMDest, g=ADDest, h=AMDDest);
@@ -66,12 +59,49 @@ CHIP CPU {
     Or8Way(in[0]=MDest, in[1]=MDDest, in[2]=AMDest, in[3]=AMDDest, out=outWriteM);
 
     // decode jump
-    
+    DMux8Way(in=true, sel=jump, a=nullJMP, b=JGT, c=JEQ, d=JGE, e=JLT, f=JNE, g=JLE, h=JMP);
 
-    // Register
-    ARegister(in=outALU, load=loadA, out=outA);
-    DRegister(in=outALU, load=loadD, out=outD);
+    // A Command (A Register) compute
+    Not(in=isCCommand, out=isACommand);
+    And16(a=instruction, b[0..15]=true, out[0..15]=avalue);
+    Mux16(a=outALU, b=avalue, sel=isACommand, out=outToARegister);
+    Or(a=isACommand, b=loadA, out=loadARegister);
+    ARegister(in[0..15]=outToARegister, load=loadARegister, out=outARegister);
+    And16(a=outARegister, b[0..15]=true, out[0..14]=addressM);
+
+    // ALU
+    DRegister(in=outALU, load=loadD, out=ALUX);
+    Mux16(a=outARegister, b=inM, sel=amode, out=ALUY); // change ALU-Y value A Register value or memory value, by a value. (reference O'reilly "The Elements of Computing System" Japanese Edition P.71 (ver. 2021))
+    ALU(x=ALUX, y=ALUY, zx=zx, nx=nx, zy=zy, ny=ny, f=f, no=no, out=outALU, zr=ALUzr, ng=ALUng);
+
+    // JMP Compute
+    // Jump in equal zero
+    Or8Way(in[0]=JEQ, in[1]=JGE, in[2]=JLE, out=JE);
+    And(a=ALUzr, b=JE, out=isJE);
+
+    // Jump in least zero
+    Or(a=JLT, b=JLE, out=JL);
+    And(a=ALUng, b=JL, out=isJL);
+
+    // Jump in Greater zero
+    Or(a=JGT, b=JGE, out=JG);
+    Or(a=ALUzr, b=ALUng, out=ALUzrng);
+    Not(in=ALUzrng, out=ALUgt); // ALUzr nor ALUng = ALUgt
+    And(a=ALUgt, b=JG, out=isJG);
+
+    // Jump in not equal zero
+    Not(in=ALUzr, out=ALUnzr);
+    And(a=ALUnzr, b=JNE, out=isJNE);
+
+    // sum jump command
+    Or8Way(in[0]=isJE, in[1]=isJL, in[2]=isJG, in[3]=isJNE, in[4]=JMP, out=isJump);
+
+    // PC
+    Mux(a=false, b=true, sel=isJump, out=loadPCRaw); // if isJump is true, overwrite PC.
+    Mux(a=false, b=loadPCRaw, sel=isCCommand, out=loadPC); // before overwrite PC, make sure this command is C command.
+    Not(in=loadPC, out=isInc);
+    PC(in=outARegister, load=loadPC, inc=isInc, reset=reset, out[0..14]=pc);
 
     Mux16(a[0..15]=false, b=outALU, sel=outWriteM, out=outM);
-    And(a=outWriteM, b=isCommand, out=writeM);
+    And(a=outWriteM, b=isCCommand, out=writeM);
 }
