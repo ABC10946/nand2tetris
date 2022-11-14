@@ -54,9 +54,12 @@ CHIP CPU {
 
     // decode dest
     DMux8Way(in=true, sel=dest, a=nullDest, b=MDest, c=DDest, d=MDDest, e=ADest, f=AMDest, g=ADDest, h=AMDDest);
-    Or8Way(in[0]=DDest, in[1]=MDDest, in[2]=ADDest, in[3]=AMDDest, out=loadD);
-    Or8Way(in[0]=ADest, in[1]=AMDest, in[2]=ADDest, in[3]=AMDDest, out=loadA);
-    Or8Way(in[0]=MDest, in[1]=MDDest, in[2]=AMDest, in[3]=AMDDest, out=outWriteM);
+    Or8Way(in[0]=DDest, in[1]=MDDest, in[2]=ADDest, in[3]=AMDDest, out=loadDRaw);
+    Or8Way(in[0]=ADest, in[1]=AMDest, in[2]=ADDest, in[3]=AMDDest, out=loadARaw);
+    Or8Way(in[0]=MDest, in[1]=MDDest, in[2]=AMDest, in[3]=AMDDest, out=outWriteMRaw);
+    And(a=loadDRaw, b=isCCommand, out=loadD);
+    And(a=loadARaw, b=isCCommand, out=loadA);
+    And(a=outWriteMRaw, b=isCCommand, out=outWriteM);
 
     // decode jump
     DMux8Way(in=true, sel=jump, a=nullJMP, b=JGT, c=JEQ, d=JGE, e=JLT, f=JNE, g=JLE, h=JMP);
@@ -98,7 +101,7 @@ CHIP CPU {
 
     // PC
     Mux(a=false, b=true, sel=isJump, out=loadPCRaw); // if isJump is true, overwrite PC.
-    Mux(a=false, b=loadPCRaw, sel=isCCommand, out=loadPC); // before overwrite PC, make sure this command is C command.
+    And(a=loadPCRaw, b=isCCommand, out=loadPC); // before overwrite PC, make sure this command is C command.
     Not(in=loadPC, out=isInc);
     PC(in=outARegister, load=loadPC, inc=isInc, reset=reset, out[0..14]=pc);
 
