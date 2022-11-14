@@ -40,4 +40,38 @@ CHIP CPU {
 
     PARTS:
     // Put your code here:
+    // descrime val or command
+
+    And16(a[0..15]=instruction, b[0..15]=true, out[15]=isCommand, out[0..14]=comp);
+    Not(in=isCommand, out=loadVal);
+    And16(a=instruction, b[0..15]=true, out[0..15]=value);
+    ARegister(in[0..15]=value, load=loadVal, out=outARegister);
+
+    // Decoder
+    // 111 a cccccc ddd jjj
+    // a: mode
+    // c: comp
+    // d: dest
+    // j: jump condition
+    And16(a[0..14]=comp ,b[0..14]=true,out[0..2]=jump,out[3..5]=dest,out[11]=zx, out[10]=nx, out[9]=zy, out[8]=ny, out[7]=f, out[6]=no ,out[12]=amode);
+    ARegister(in=false, load=false, out=outAtoCompute);
+    DRegister(in=false, load=false, out=ALUX);
+    Mux16(a=outAtoCompute, b=inM, sel=amode, out=ALUY);
+    ALU(x=ALUX, y=ALUY, zx=zx, nx=nx, zy=zy, ny=ny, f=f, no=no, out=outALU, zr=ALUzr, ng=ALUng);
+
+    // decode dest
+    DMux8Way(in=true, sel=dest, a=nullDest, b=MDest, c=DDest, d=MDDest, e=ADest, f=AMDest, g=ADDest, h=AMDDest);
+    Or8Way(in[0]=DDest, in[1]=MDDest, in[2]=ADDest, in[3]=AMDDest, out=loadD);
+    Or8Way(in[0]=ADest, in[1]=AMDest, in[2]=ADDest, in[3]=AMDDest, out=loadA);
+    Or8Way(in[0]=MDest, in[1]=MDDest, in[2]=AMDest, in[3]=AMDDest, out=outWriteM);
+
+    // decode jump
+    
+
+    // Register
+    ARegister(in=outALU, load=loadA, out=outA);
+    DRegister(in=outALU, load=loadD, out=outD);
+
+    Mux16(a[0..15]=false, b=outALU, sel=outWriteM, out=outM);
+    And(a=outWriteM, b=isCommand, out=writeM);
 }
