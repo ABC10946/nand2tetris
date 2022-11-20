@@ -39,7 +39,7 @@ def comp(mnemonic):
         comp_binary = [0, 0, 1, 1, 0, 1]
 
     if mnemonic == '!A' or mnemonic == '!M':
-        comp_binary = [1, 1, 0, 0, 1, 1]
+        comp_binary = [1, 1, 0, 0, 0, 1]
 
     if mnemonic == '-D':
         comp_binary = [0, 0, 1, 1, 1, 1]
