@@ -13,6 +13,11 @@ class Parser:
         self.text = text.strip()
         self.text = self.text.replace(' ', '')
         self.text = self.text.replace('\t', '')
+        comment_idx = None
+        if self.text.find('//') != -1:
+            comment_idx = self.text.find('//')
+
+        self.text = self.text[0:comment_idx]
 
         self.commandType = None
         self.rawVal = None
@@ -86,7 +91,7 @@ class Parser:
             else:
                 # print(
                 #     f'Error, dest not found in this C_COMMAND \"{self.text}\"')
-                return -1
+                return 'null'
         else:
             # print('getDest function enable only C_COMMAND')
             return -1
@@ -105,8 +110,6 @@ class Parser:
                 comp, _ = self.text.split(';')
                 return comp
             else:
-                # print(
-                #     f'Error, comp not found in this C_COMMAND \"{self.text}\"')
                 return -1
         else:
             # print('getComp function enable only C_COMMAND')
@@ -123,9 +126,7 @@ class Parser:
                 _, jump = self.text.split(';')
                 return jump
             else:
-                # print(
-                #     f'Error, jump not found in this C_COMMAND \"{self.text}\"')
-                return -1
+                return 'null'
         else:
             # print('getJump function enable only C_COMMAND')
             return -1
