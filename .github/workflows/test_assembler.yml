@@ -32,3 +32,5 @@ jobs:
       - name: test symboltable
         run: pytest symboltabletest.py -v
         working-directory: ./06
+      - name: test assembler
+        run: sh asm_disasm_compare.sh
