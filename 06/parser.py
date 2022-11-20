@@ -39,7 +39,7 @@ class Parser:
                     # print('Error, value must be sipecified characters',
                     #      file=sys.stderr)
                     return -1
-            elif self.text[0] == '(' and self.text[-1] == ')':
+            elif self.text[0] == '(' and isValOrSymbol(self.text[1:-1]) and self.text[-1] == ')':
                 self.commandType = CommandType.L_COMMAND
                 return CommandType.L_COMMAND
             else:
@@ -69,13 +69,11 @@ class Parser:
         return -1
 
     def get_symbol(self):
-        if self.commandType == CommandType.L_COMMAND:
+        if self.get_command_type() == CommandType.L_COMMAND:
             symbolText = self.text[1:-1]
-            if isValOrSymbol(symbolText):
-                return symbolText
-            else:
-                # print("Error, symbol must be specified characters", file=sys.stderr)
-                return -1
+            return symbolText
+        elif self.get_command_type() == CommandType.A_COMMAND:
+            return self.text[1:]
 
         # print("Error, command type is not L_COMMAND", file=sys.stderr)
         return -1

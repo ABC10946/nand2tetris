@@ -160,3 +160,27 @@ def test_getJump_get_jump_from_full_C_COMMAND():
 def test_getJump_get_jump_from_comp_jump_command():
     p = parser.Parser('M+1;JMP')
     assert p.getJump() == 'JMP'
+
+
+def test_get_symbol_get_value_from_A_COMMAND():
+    p = parser.Parser('@42')
+    assert p.get_command_type() == CommandType.A_COMMAND
+    assert p.get_symbol() == '42'
+
+
+def test_get_symbol_get_value_from_L_COMMAND():
+    p = parser.Parser('(42)')
+    assert p.get_command_type() == CommandType.L_COMMAND
+    assert p.get_symbol() == '42'
+
+
+def test_get_symbol_get_symbol_from_A_COMMAND():
+    p = parser.Parser('@R0')
+    assert p.get_command_type() == CommandType.A_COMMAND
+    assert p.get_symbol() == 'R0'
+
+
+def test_get_symbol_get_symbol_from_L_COMMAND():
+    p = parser.Parser('(LOOP)')
+    assert p.get_command_type() == CommandType.L_COMMAND
+    assert p.get_symbol() == 'LOOP'
