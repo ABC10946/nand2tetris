@@ -129,7 +129,7 @@ def test_getDest_get_dest_from_dest_comp_command():
 
 def test_getDest_not_found_dest():
     p = parser.Parser('M+1;JMP')
-    assert p.getDest() == -1
+    assert p.getDest() == 'null'
 
 
 def test_getDest_not_C_COMMAND_error():
@@ -160,6 +160,11 @@ def test_getJump_get_jump_from_full_C_COMMAND():
 def test_getJump_get_jump_from_comp_jump_command():
     p = parser.Parser('M+1;JMP')
     assert p.getJump() == 'JMP'
+
+
+def test_getJump_not_found_jump():
+    p = parser.Parser('D=M+1')
+    assert p.getJump() == 'null'
 
 
 def test_get_symbol_get_value_from_A_COMMAND():
