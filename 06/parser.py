@@ -10,15 +10,7 @@ jump_lst = ['null', 'JGT', 'JEQ', 'JGE', 'JLT', 'JNE', 'JLE', 'JMP']
 
 class Parser:
     def __init__(self, text):
-        self.text = text.strip()
-        self.text = self.text.replace(' ', '')
-        self.text = self.text.replace('\t', '')
-        comment_idx = None
-        if self.text.find('//') != -1:
-            comment_idx = self.text.find('//')
-
-        self.text = self.text[0:comment_idx]
-
+        self.text = text.replace(' ', '')
         self.commandType = None
         self.rawVal = None
         self.dest = None
@@ -138,7 +130,7 @@ def isValOrSymbol(rawText):
             return False  # 先頭が数字から始まるシンボルは使えない
         else:
             for c in rawText:
-                if not (c.isalpha() or c.isdigit() or c == '.' or c == '$' or c == ':'):
+                if not (c.isalpha() or c.isdigit() or c == '.' or c == '$' or c == ':' or c == '_'):
                     return False
 
             return True
