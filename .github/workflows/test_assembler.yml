@@ -25,7 +25,10 @@ jobs:
         run: pip install pytest
       - name: test parser
         run: pytest 06/parsertest.py
+        working-directory: ./06
       - name: test coder
         run: pytest 06/codertest.py
+        working-directory: ./06
       - name: test symboltable
         run: pytest 06/symboltabletest.py
+        working-directory: ./06
