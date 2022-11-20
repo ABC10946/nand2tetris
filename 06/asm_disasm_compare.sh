@@ -41,10 +41,10 @@ diff --strip-trailing-cr -Bbw  -I '//.*' pong/PongL.asm pong/PongL.disas.asm
 
 
 # ---- rect ----
-python3 assembler.py < rect/rectL.asm > rect/rectL.hack
+python3 assembler.py < rect/RectL.asm > rect/RectL.hack
 
 # disassmble assembled rectL
-python3 disassembler.py < rect/rectL.hack > rect/rectL.disas.asm
+python3 disassembler.py < rect/RectL.hack > rect/RectL.disas.asm
 
 # compare original asm and disassembled asm
-diff --strip-trailing-cr -Bbw -I '//.*' rect/rectL.asm rect/rectL.disas.asm
+diff --strip-trailing-cr -Bbw -I '//.*' rect/RectL.asm rect/RectL.disas.asm
