@@ -34,3 +34,5 @@ jobs:
         working-directory: ./06
       - name: test assembler
         run: sh asm_disasm_compare.sh
+        working-directory: ./06
+
