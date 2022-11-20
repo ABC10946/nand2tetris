@@ -24,11 +24,11 @@ jobs:
       - name: Install dependencies
         run: pip install pytest
       - name: test parser
-        run: pytest parsertest.py
+        run: pytest parsertest.py -v
         working-directory: ./06
       - name: test coder
-        run: pytest codertest.py
+        run: pytest codertest.py -v
         working-directory: ./06
       - name: test symboltable
-        run: pytest symboltabletest.py
+        run: pytest symboltabletest.py -v
         working-directory: ./06
